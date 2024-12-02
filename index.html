@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Negotiator Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chat-container {
+            width: 60%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .chat-box {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            height: 300px;
+            overflow-y: scroll;
+        }
+
+        .chat-message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background-color: #e1e1e1;
+        }
+
+        .input-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        button {
+            width: 15%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background-color: #007bff;
+            border-radius: 3px;
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h1>Price Negotiator Chatbot</h1>
+
+    <div class="chat-box" id="chatBox">
+        <div class="chat-message bot-message">Hello! How can I assist you today?</div>
+    </div>
+
+    <div class="input-container">
+        <input type="text" id="userInput" placeholder="Type your message here..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    function appendMessage(message, sender) {
+        const chatBox = document.getElementById("chatBox");
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("chat-message");
+        messageElement.classList.add(sender === "bot" ? "bot-message" : "user-message");
+        messageElement.innerText = message;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight; 
+    }
+
+    
+    function sendMessage() {
+        const userInput = document.getElementById("userInput").value.trim();
+        if (userInput === "") return;  
+
+        appendMessage(userInput, "user");  
+
+        
+        fetch('/', {
+            method: 'POST',
+            body: JSON.stringify({ user_input: userInput }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            appendMessage(data.message, "bot");  
+        });
+
+        document.getElementById("userInput").value = "";  
+    }
+
+   
+    document.getElementById("userInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+</script>
+
+</body>
+</html>
